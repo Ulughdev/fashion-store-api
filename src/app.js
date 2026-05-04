@@ -19,6 +19,7 @@ app.use("/api/products", require("./modules/products/product.routes"));
 app.use("/api/orders", require("./modules/orders/order.routes"));
 // app.js ga qo'shing
 app.use("/api/categories", require("./modules/categories/category.routes"));
+app.use("/api/orders", require("./modules/orders/order.routes"));
 app.use(errorHandler);
 
 module.exports = app;
