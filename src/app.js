@@ -17,7 +17,8 @@ app.use(cookieParser());
 app.use("/api/auth", require("./modules/auth/auth.routes"));
 app.use("/api/products", require("./modules/products/product.routes"));
 app.use("/api/orders", require("./modules/orders/order.routes"));
-
+// app.js ga qo'shing
+app.use("/api/categories", require("./modules/categories/category.routes"));
 app.use(errorHandler);
 
 module.exports = app;
