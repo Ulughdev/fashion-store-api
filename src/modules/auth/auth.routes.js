@@ -1,15 +1,26 @@
 const router = require("express").Router();
-const authController = require("./auth.controller");
+const {
+  register,
+  login,
+  refresh,
+  logout,
+  registerAdmin,
+} = require("./auth.controller");
 const authenticate = require("../../middlewares/auth");
 const validate = require("../../middlewares/validate");
-const { registerSchema, loginSchema } = require("./auth.validation");
+const {
+  registerSchema,
+  loginSchema,
+  registerAdminSchema,
+} = require("./auth.validation");
 
 // Public routes
-router.post("/register", validate(registerSchema), authController.register);
-router.post("/login", validate(loginSchema), authController.login);
-router.post("/refresh", authController.refresh);
+router.post("/register", validate(registerSchema), register);
+router.post("/register-admin", validate(registerAdminSchema), registerAdmin);
+router.post("/login", validate(loginSchema), login);
+router.post("/refresh", refresh);
 
 // Private routes
-router.post("/logout", authenticate, authController.logout);
+router.post("/logout", authenticate, logout);
 
 module.exports = router;

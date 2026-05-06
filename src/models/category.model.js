@@ -30,13 +30,12 @@ const categorySchema = new mongoose.Schema(
 );
 
 // Saqlashdan oldin slug avtomatik yaratish
-categorySchema.pre("save", function (next) {
-  if (!this.isModified("name")) return next();
+categorySchema.pre("save", function () {
+  if (!this.isModified("name")) return;
   this.slug = this.name
     .toLowerCase()
-    .replace(/\s+/g, "-") // bo'sh joy o'rniga -
-    .replace(/[^\w\-]+/g, ""); // maxsus belgilarni olib tashlash
-  next();
+    .replace(/\s+/g, "-")
+    .replace(/[^\w\-]+/g, "");
 });
 
 module.exports = mongoose.model("Category", categorySchema);

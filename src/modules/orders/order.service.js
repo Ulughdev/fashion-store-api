@@ -51,7 +51,7 @@ const createOrder = async (userId, { items, shippingAddress, notes }) => {
     shippingAddress,
     subtotal,
     shippingCost,
-    total: subtotal + shippingCost,
+    total: +(subtotal + shippingCost).toFixed(2),
     notes,
   });
 

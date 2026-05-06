@@ -77,4 +77,24 @@ const logout = async (req, res, next) => {
   }
 };
 
-module.exports = { register, login, refresh, logout };
+const registerAdmin = async (req, res, next) => {
+  try {
+    const tokens = await authService.registerAdmin(req.body);
+
+    res.cookie("refreshToken", tokens.refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    res.status(201).json({
+      success: true,
+      accessToken: tokens.accessToken,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { register, login, refresh, logout, registerAdmin };

@@ -63,4 +63,21 @@ const logout = async (userId) => {
   await User.findByIdAndUpdate(userId, { refreshToken: null });
 };
 
-module.exports = { register, login, refresh, logout };
+const registerAdmin = async ({ name, email, password, adminSecret }) => {
+  if (adminSecret !== process.env.ADMIN_SECRET) {
+    throw new AppError("Invalid admin secret", 403);
+  }
+
+  const exists = await User.findOne({ email });
+  if (exists) throw new AppError("Email already exists", 400);
+
+  const user = await User.create({ name, email, password, role: "admin" });
+  const tokens = generateTokens(user._id);
+
+  user.refreshToken = tokens.refreshToken;
+  await user.save();
+
+  return tokens;
+};
+
+module.exports = { register, login, refresh, logout, registerAdmin };
