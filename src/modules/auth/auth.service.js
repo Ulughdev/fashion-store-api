@@ -1,3 +1,4 @@
+//const User = require("../user.model");
 const User = require("../../models/user.model");
 const AppError = require("../../utils/AppError");
 const jwt = require("jsonwebtoken");
