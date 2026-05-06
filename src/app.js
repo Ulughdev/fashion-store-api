@@ -23,4 +23,9 @@ app.use("/api/orders", require("./modules/orders/order.routes"));
 app.use("/api/users", require("./modules/users/user.routes"));
 app.use(errorHandler);
 
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
+
+// Swagger
+app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 module.exports = app;
