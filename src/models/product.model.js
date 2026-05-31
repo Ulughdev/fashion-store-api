@@ -105,4 +105,41 @@ productSchema.methods.calculateAvgRating = function () {
   this.totalReviews = this.ratings.length;
 };
 
+// JSON transformatsiyasi - frontendga moslashtirish
+productSchema.set("toJSON", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    if (ret.sizes && Array.isArray(ret.sizes)) {
+      ret.sizes = ret.sizes.map((s) => (typeof s === "object" && s.size ? s.size : s));
+    }
+    if (ret.colors && Array.isArray(ret.colors)) {
+      ret.colors = ret.colors.map((c) => (typeof c === "object" && c.name ? c.name : c));
+    }
+    if (doc.sizes && Array.isArray(doc.sizes)) {
+      ret.stock = doc.sizes.reduce((sum, s) => sum + (s.stock || 0), 0);
+    } else {
+      ret.stock = ret.stock || 0;
+    }
+    return ret;
+  },
+});
+
+productSchema.set("toObject", {
+  virtuals: true,
+  transform: function (doc, ret) {
+    if (ret.sizes && Array.isArray(ret.sizes)) {
+      ret.sizes = ret.sizes.map((s) => (typeof s === "object" && s.size ? s.size : s));
+    }
+    if (ret.colors && Array.isArray(ret.colors)) {
+      ret.colors = ret.colors.map((c) => (typeof c === "object" && c.name ? c.name : c));
+    }
+    if (doc.sizes && Array.isArray(doc.sizes)) {
+      ret.stock = doc.sizes.reduce((sum, s) => sum + (s.stock || 0), 0);
+    } else {
+      ret.stock = ret.stock || 0;
+    }
+    return ret;
+  },
+});
+
 module.exports = mongoose.model("Product", productSchema);

@@ -17,15 +17,72 @@ router.post(
   productController.addReview,
 );
 
+// Custom middleware: formats frontend simple arrays to backend structured objects
+const mapFrontendProductPayload = (req, res, next) => {
+  if (req.body) {
+    const { sizes, colors, stock = 0 } = req.body;
+    
+    if (sizes && Array.isArray(sizes)) {
+      req.body.sizes = sizes.map(s => {
+        if (typeof s === "string") {
+          return { size: s.trim().toUpperCase(), stock: Number(stock) };
+        }
+        return s;
+      });
+    }
+
+    if (colors && Array.isArray(colors)) {
+      req.body.colors = colors.map(c => {
+        if (typeof c === "string") {
+          const hexMap = {
+            "qora": "#000000",
+            "oq": "#ffffff",
+            "qizil": "#ff0000",
+            "ko'k": "#0000ff",
+            "yashil": "#008000",
+            "sariq": "#ffff00",
+            "pushti": "#ffc0cb",
+            "kulrang": "#808080",
+            "jigarrang": "#a52a2a",
+            "olovrang": "#ffa500",
+            "binafsharang": "#800080"
+          };
+          const name = c.trim();
+          const hex = hexMap[name.toLowerCase()] || "#000000";
+          return { name, hex, stock: Number(stock), images: [] };
+        }
+        return c;
+      });
+    }
+
+    // Joi validatsiyasida xato bermasligi uchun keraksiz maydonlarni o'chiramiz
+    delete req.body.stock;
+
+    if (req.body.discountPrice === "" || req.body.discountPrice === null || req.body.discountPrice === undefined || isNaN(Number(req.body.discountPrice))) {
+      delete req.body.discountPrice;
+    } else {
+      req.body.discountPrice = Number(req.body.discountPrice);
+    }
+  }
+  next();
+};
+
 // Admin routes
 router.post(
   "/",
   authenticate,
   isAdmin,
+  mapFrontendProductPayload,
   validate(createProductSchema),
   productController.createProduct,
 );
-router.put("/:id", authenticate, isAdmin, productController.updateProduct);
+router.put(
+  "/:id",
+  authenticate,
+  isAdmin,
+  mapFrontendProductPayload,
+  productController.updateProduct,
+);
 router.delete("/:id", authenticate, isAdmin, productController.deleteProduct);
 
 /**

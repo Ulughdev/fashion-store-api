@@ -5,14 +5,34 @@ const isAdmin = require("../../middlewares/isAdmin");
 const validate = require("../../middlewares/validate");
 const { createOrderSchema, updateStatusSchema } = require("./order.validation");
 
+// Custom middleware: maps frontend simple order fields to backend Joi/DB fields
+const mapFrontendOrderPayload = (req, res, next) => {
+  if (req.body) {
+    if (req.body.items && Array.isArray(req.body.items)) {
+      req.body.items = req.body.items.map(item => {
+        if (item.product && !item.productId) {
+          item.productId = item.product;
+        }
+        return item;
+      });
+    }
+    if (req.body.shippingAddress && req.body.shippingAddress.address && !req.body.shippingAddress.street) {
+      req.body.shippingAddress.street = req.body.shippingAddress.address;
+    }
+  }
+  next();
+};
+
 // Customer routes
 router.post(
   "/",
   authenticate,
+  mapFrontendOrderPayload,
   validate(createOrderSchema),
   orderController.createOrder,
 );
 router.get("/my-orders", authenticate, orderController.getMyOrders);
+router.get("/my", authenticate, orderController.getMyOrders); // Alias for frontend compatibility
 router.get("/:id", authenticate, orderController.getOrderById);
 router.patch("/:id/cancel", authenticate, orderController.cancelOrder);
 
